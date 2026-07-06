@@ -1,0 +1,7 @@
+# Core SDK used in Modules 0-5, 7, 8 (verified against current docs)
+anthropic>=0.116.0
+python-dotenv>=1.0.0
+
+# Module 6 introduces a framework. Uncomment the ONE you choose to learn.
+# crewai>=0.86.0
+# langgraph>=0.2.0

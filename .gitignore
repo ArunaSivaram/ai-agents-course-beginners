@@ -1,0 +1,18 @@
+# Secrets — never commit your real keys
+.env
+
+# Long-term memory / scratch files your agents write
+*.local.json
+memory_store.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
