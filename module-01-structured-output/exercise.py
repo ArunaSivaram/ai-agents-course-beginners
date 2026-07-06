@@ -23,22 +23,23 @@ SAMPLES = [
 
 
 def extract(client, text: str) -> dict:
-    # TODO 1: write a prompt that instructs the model to return ONLY a JSON
-    #         object with these keys: issue_type, product, urgency (low/med/high).
-    #         Be explicit: "Respond with JSON only, no prose, no markdown fences."
-    prompt = f"..."  # <-- replace this
+    prompt = (
+        "Extract the fields as JSON. Allowed keys: issue_type, product, urgency. "
+        "urgency must be exactly one of: low, med, high. "
+        "If product is unknown, use null. "
+        "Respond with a single JSON object and nothing else - no prose, no markdown fences.\n\n"
+        f"Input: {text}"
+    )
 
     resp = client.messages.create(
         model=MODEL,
         max_tokens=300,
+        temperature=0,
         messages=[{"role": "user", "content": prompt}],
     )
     raw = resp.content[0].text
 
-    # TODO 2: parse `raw` into a dict with json.loads and return it.
-    #         If parsing fails on some input, tighten the prompt until it never does.
-    #         (Hint: lower hallucination by telling it exactly which keys/values are allowed.)
-    return {}
+    return json.loads(raw)
 
 
 def main() -> None:
