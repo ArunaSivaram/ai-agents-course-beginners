@@ -49,14 +49,23 @@ def main() -> None:
 
     resp = client.messages.create(model=MODEL, max_tokens=500, tools=TOOLS, messages=messages)
 
-    # TODO 1: check resp.stop_reason. If it's "tool_use", locate the tool_use block.
-    # TODO 2: call get_ticket_status(**block.input) to get the real result.
-    # TODO 3: append the assistant's turn (resp.content) to messages, then append a
-    #         user turn containing a tool_result block:
-    #         {"role":"user","content":[{"type":"tool_result",
-    #             "tool_use_id": block.id, "content": str(result)}]}
-    # TODO 4: call the model again and print the final text answer.
-    print("stop_reason:", resp.stop_reason)
+    if resp.stop_reason != "tool_use":
+        print(resp.content[0].text)
+        return
+
+    block = next(b for b in resp.content if b.type == "tool_use")
+    result = get_ticket_status(**block.input)
+
+    messages.append({"role": "assistant", "content": resp.content})
+    messages.append({"role": "user", "content": [{
+        "type": "tool_result",
+        "tool_use_id": block.id,
+        "content": str(result),
+    }]})
+
+    final = client.messages.create(model=MODEL, max_tokens=500, tools=TOOLS, messages=messages)
+    text = next(b for b in final.content if b.type == "text")
+    print(text.text)
 
 
 if __name__ == "__main__":
