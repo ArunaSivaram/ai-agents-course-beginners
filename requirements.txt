@@ -2,6 +2,10 @@
 anthropic>=0.116.0
 python-dotenv>=1.0.0
 
+# Module 4 long-term memory: Supabase-backed holdings store.
+# The code falls back to a local JSON store if SUPABASE_URL isn't set.
+supabase>=2.0
+
 # Module 6 introduces a framework. Uncomment the ONE you choose to learn.
 # crewai>=0.86.0
 # langgraph>=0.2.0

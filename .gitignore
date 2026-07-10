@@ -4,6 +4,7 @@
 # Long-term memory / scratch files your agents write
 *.local.json
 memory_store.json
+holdings_store.json
 
 # Python
 __pycache__/
