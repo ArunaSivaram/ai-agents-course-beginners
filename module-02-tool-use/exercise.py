@@ -2,8 +2,8 @@
 
 GOAL: let the model DECIDE to call a function, then you run it and hand the
       result back.
-SUCCESS: you can see the model request `get_ticket_status`, you execute it,
-         and the model uses the returned data in its final answer.
+SUCCESS: you can see the model request `get_stock_price` for AAPL, you execute
+         it, and the model uses the returned price/day-change in its answer.
 
 Key facts about the loop (verified against current Anthropic docs):
   - Pass tools=[{"name","description","input_schema"}]
@@ -20,24 +20,35 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 from common.client import get_client, MODEL
 
-FAKE_DB = {
-    "403": {"status": "escalated", "owner": "billing", "age_days": 6},
-    "119": {"status": "resolved", "owner": "support", "age_days": 1},
+# MOCK prices - made up for the exercise, NOT real market data.
+# In production you'd swap this dict for a real market-data API call.
+FAKE_PRICES = {
+    "AAPL": {"price": 223.50, "previous_close": 220.00},
+    "MSFT": {"price": 442.10, "previous_close": 430.00},
+    "NVDA": {"price": 118.90, "previous_close": 120.00},
 }
 
 
-def get_ticket_status(ticket_id: str) -> dict:
-    return FAKE_DB.get(ticket_id, {"status": "not_found"})
+def get_stock_price(ticker: str) -> dict:
+    data = FAKE_PRICES.get(ticker.upper())
+    if not data:
+        return {"ticker": ticker, "error": "unknown ticker"}
+    return {
+        "ticker": ticker.upper(),
+        "price": data["price"],
+        "previous_close": data["previous_close"],
+        "day_change_pct": round((data["price"] / data["previous_close"] - 1) * 100, 2),
+    }
 
 
 TOOLS = [
     {
-        "name": "get_ticket_status",
-        "description": "Look up the current status of a support ticket by its id.",
+        "name": "get_stock_price",
+        "description": "Look up today's price and previous close for a single stock ticker (e.g. AAPL, MSFT, NVDA).",
         "input_schema": {
             "type": "object",
-            "properties": {"ticket_id": {"type": "string"}},
-            "required": ["ticket_id"],
+            "properties": {"ticker": {"type": "string"}},
+            "required": ["ticker"],
         },
     }
 ]
@@ -45,12 +56,12 @@ TOOLS = [
 
 def main() -> None:
     client = get_client()
-    messages = [{"role": "user", "content": "What's going on with ticket 403?"}]
+    messages = [{"role": "user", "content": "How is Apple stock doing today?"}]
 
     resp = client.messages.create(model=MODEL, max_tokens=500, tools=TOOLS, messages=messages)
 
     # TODO 1: check resp.stop_reason. If it's "tool_use", locate the tool_use block.
-    # TODO 2: call get_ticket_status(**block.input) to get the real result.
+    # TODO 2: call get_stock_price(**block.input) to get the real result.
     # TODO 3: append the assistant's turn (resp.content) to messages, then append a
     #         user turn containing a tool_result block:
     #         {"role":"user","content":[{"type":"tool_result",

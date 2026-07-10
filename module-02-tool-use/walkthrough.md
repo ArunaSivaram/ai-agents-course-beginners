@@ -13,10 +13,11 @@
    containing a `tool_result` block that points at that `.id`.
 
 ## Steps
-1. Open `exercise.py`. `TOOLS` and `get_ticket_status` are already defined.
+1. Open `exercise.py`. `TOOLS` and `get_stock_price` are already defined. The
+   user message asks "How is Apple stock doing today?" - a single-ticker lookup.
 2. **TODO 1 - find the tool call.** After the first `create(...)`, loop over
    `resp.content` and grab the block where `block.type == "tool_use"`.
-3. **TODO 2 - run it.** `result = get_ticket_status(**block.input)`.
+3. **TODO 2 - run it.** `result = get_stock_price(**block.input)`.
 4. **TODO 3 - close the loop.** Append two turns to `messages`:
    ```python
    messages.append({"role": "assistant", "content": resp.content})
@@ -34,8 +35,9 @@
    ```
 
 ## What success looks like
-You see the model request `get_ticket_status` for id `403`, you return the dict,
-and the model's final answer describes it as escalated / owned by billing / 6 days old.
+You see the model request `get_stock_price` for `AAPL`, you return the dict
+(price, previous close, day change), and the model's final answer names the
+ticker, the current price, and whether it's up or down today.
 
 ## Common pitfalls
 - Forgetting to append the assistant turn (`resp.content`) before the tool_result -
@@ -53,11 +55,11 @@ git add module-02-tool-use/ && git commit -m "Module 2: single tool call round-t
 
 ## Practical example: a portfolio agent that talks to FactIQ
 
-Once the ticket demo makes sense, open **`portfolio_agent.py`** in this folder. It's
-the same four-beat mechanic in a real scenario: you ask *"how's my portfolio doing
-today?"*, the agent calls a tool to fetch the numbers, then reports back in plain
-English. Unlike `exercise.py`, this file is **complete and runnable** - read it, run
-it, and watch the pattern work:
+Once the single-stock lookup in `exercise.py` clicks, open **`portfolio_agent.py`** in
+this folder. Same four-beat mechanic, one step up: instead of one ticker, the agent
+asks *"how's my portfolio doing today?"* and calls a tool that pulls **all your
+holdings** and reports back in plain English. Unlike `exercise.py`, this file is
+**complete and runnable** - read it, run it, and watch the pattern work:
 
 ```bash
 python module-02-tool-use/portfolio_agent.py
