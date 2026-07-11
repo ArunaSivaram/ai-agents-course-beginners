@@ -1,0 +1,7 @@
+[server]
+# Headless disables the interactive email prompt on first run.
+headless = true
+
+[browser]
+# Opt out of Streamlit's usage stats. See https://docs.streamlit.io/library/advanced-features/configuration
+gatherUsageStats = false

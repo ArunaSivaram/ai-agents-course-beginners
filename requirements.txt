@@ -6,6 +6,9 @@ python-dotenv>=1.0.0
 # The code falls back to a local JSON store if SUPABASE_URL isn't set.
 supabase>=2.0
 
+# Course dashboard (dashboard/streamlit_app.py). Optional if you don't need it.
+streamlit>=1.35
+
 # Module 6 introduces a framework. Uncomment the ONE you choose to learn.
 # crewai>=0.86.0
 # langgraph>=0.2.0

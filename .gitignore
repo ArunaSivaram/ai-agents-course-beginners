@@ -6,6 +6,9 @@
 memory_store.json
 holdings_store.json
 
+# Dashboard user progress
+dashboard/progress.json
+
 # Python
 __pycache__/
 *.py[cod]
